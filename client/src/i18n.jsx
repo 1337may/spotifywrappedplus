@@ -32,7 +32,7 @@ const translations = {
     topArtists: "Топ исполнителей",
     greeting: "Привет",
     statUniqueArtists: "Разных исполнителей",
-    statExplicit: "С ненормативной лексикой",
+    statNewArtists: "Новых исполнителей",
   },
   en: {
     appTitle: "Spotify Taste Summary",
@@ -63,7 +63,7 @@ const translations = {
     topArtists: "Top Artists",
     greeting: "Hi",
     statUniqueArtists: "Different Artists",
-    statExplicit: "Explicit Tracks",
+    statNewArtists: "New Artists",
   },
 };
 

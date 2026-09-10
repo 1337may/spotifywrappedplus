@@ -1,11 +1,13 @@
 import { useLanguage } from "../i18n.jsx";
 
-export default function StatsGrid({ stats }) {
+export default function StatsGrid({ stats, range }) {
   const { t } = useLanguage();
 
   const tiles = [
     { label: t("statUniqueArtists"), value: stats.uniqueArtistsCount },
-    { label: t("statExplicit"), value: `${stats.explicitPercent}%` },
+    ...(range === "long_term"
+      ? []
+      : [{ label: t("statNewArtists"), value: stats.newArtistsCount }]),
   ];
 
   return (

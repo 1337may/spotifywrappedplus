@@ -78,7 +78,7 @@ export default function Summary() {
 
       {data && !loading && (
         <>
-          <StatsGrid stats={data.stats} />
+          <StatsGrid stats={data.stats} range={range} />
           <div className="summary-grid">
             <section>
               <h2>{t("topTracks")}</h2>

@@ -84,16 +84,18 @@ export async function getSummary(range) {
     throw err;
   }
 
-  const [tracksData, artistsData, profile] = await Promise.all([
+  const BASELINE_RANGE = "long_term";
+  const [tracksData, artistsData, profile, baselineArtistsData] = await Promise.all([
     spotifyGet(accessToken, `/me/top/tracks?time_range=${range}&limit=50`),
     spotifyGet(accessToken, `/me/top/artists?time_range=${range}&limit=50`),
     spotifyGet(accessToken, "/me"),
+    range === BASELINE_RANGE ? null : spotifyGet(accessToken, `/me/top/artists?time_range=${BASELINE_RANGE}&limit=50`),
   ]);
 
-  return buildSummary(tracksData, artistsData, profile);
+  return buildSummary(tracksData, artistsData, profile, baselineArtistsData);
 }
 
-function buildSummary(tracksData, artistsData, profile) {
+function buildSummary(tracksData, artistsData, profile, baselineArtistsData) {
   const topTracks = tracksData.items.map((track) => ({
     id: track.id,
     name: track.name,
@@ -110,13 +112,13 @@ function buildSummary(tracksData, artistsData, profile) {
   }));
 
   const uniqueArtistIds = new Set(tracksData.items.flatMap((t) => t.artists.map((a) => a.id)));
-  const explicitCount = tracksData.items.filter((t) => t.explicit).length;
+
+  const baselineArtistIds = new Set((baselineArtistsData ?? artistsData).items.map((a) => a.id));
+  const newArtistsCount = topArtists.filter((a) => !baselineArtistIds.has(a.id)).length;
 
   const stats = {
     uniqueArtistsCount: uniqueArtistIds.size,
-    explicitPercent: tracksData.items.length
-      ? Math.round((explicitCount / tracksData.items.length) * 100)
-      : 0,
+    newArtistsCount,
   };
 
   return {
