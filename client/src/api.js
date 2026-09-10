@@ -101,22 +101,5 @@ function buildSummary(tracksData, artistsData) {
     url: artist.external_urls?.spotify ?? null,
   }));
 
-  const genreCounts = new Map();
-  for (const artist of artistsData.items) {
-    for (const genre of artist.genres ?? []) {
-      genreCounts.set(genre, (genreCounts.get(genre) ?? 0) + 1);
-    }
-  }
-
-  const totalGenreMentions = [...genreCounts.values()].reduce((a, b) => a + b, 0) || 1;
-  const topGenres = [...genreCounts.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 15)
-    .map(([genre, count]) => ({
-      genre,
-      count,
-      percent: Math.round((count / totalGenreMentions) * 100),
-    }));
-
-  return { topTracks, topArtists, topGenres };
+  return { topTracks, topArtists };
 }

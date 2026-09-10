@@ -77,10 +77,6 @@ body {
   gap: 32px;
 }
 
-.summary-grid section:last-child {
-  grid-column: 1 / -1;
-}
-
 .item-list {
   list-style: none;
   padding: 0;
@@ -120,42 +116,6 @@ body {
 .item-subtitle {
   color: #b3b3b3;
   font-size: 0.85em;
-}
-
-.genre-chart {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.genre-row {
-  display: grid;
-  grid-template-columns: 160px 1fr 40px;
-  align-items: center;
-  gap: 10px;
-}
-
-.genre-label {
-  text-transform: capitalize;
-  font-size: 0.9em;
-}
-
-.genre-bar-track {
-  background: #222;
-  border-radius: 4px;
-  height: 10px;
-  overflow: hidden;
-}
-
-.genre-bar-fill {
-  background: #1db954;
-  height: 100%;
-}
-
-.genre-percent {
-  text-align: right;
-  font-size: 0.85em;
-  color: #b3b3b3;
 }
 
 @media (max-width: 700px) {

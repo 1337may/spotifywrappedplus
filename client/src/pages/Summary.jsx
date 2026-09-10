@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { consumeTokensFromUrlHash, getSummary, isAuthenticated, logout } from "../api.js";
 import TrackList from "../components/TrackList.jsx";
 import ArtistList from "../components/ArtistList.jsx";
-import GenreChart from "../components/GenreChart.jsx";
 
 const RANGES = [
   { value: "short_term", label: "4 недели" },
@@ -78,10 +77,6 @@ export default function Summary() {
           <section>
             <h2>Топ исполнителей</h2>
             <ArtistList artists={data.topArtists.slice(0, 20)} />
-          </section>
-          <section>
-            <h2>Топ жанров</h2>
-            <GenreChart genres={data.topGenres} />
           </section>
         </div>
       )}
