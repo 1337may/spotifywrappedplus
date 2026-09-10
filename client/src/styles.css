@@ -1,0 +1,165 @@
+:root {
+  color-scheme: dark;
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #121212;
+  color: #fff;
+}
+
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.centered {
+  text-align: center;
+  padding-top: 15vh;
+}
+
+.spotify-button {
+  display: inline-block;
+  margin-top: 24px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  background: #1db954;
+  color: #000;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.error {
+  color: #ff6b6b;
+}
+
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.link-button {
+  background: none;
+  border: 1px solid #555;
+  color: #fff;
+  border-radius: 999px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.range-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.tab {
+  background: #222;
+  border: none;
+  color: #ccc;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: #1db954;
+  color: #000;
+  font-weight: 700;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.summary-grid section:last-child {
+  grid-column: 1 / -1;
+}
+
+.item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.thumb.round {
+  border-radius: 50%;
+}
+
+.item-title {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.item-title:hover {
+  text-decoration: underline;
+}
+
+.item-subtitle {
+  color: #b3b3b3;
+  font-size: 0.85em;
+}
+
+.genre-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.genre-row {
+  display: grid;
+  grid-template-columns: 160px 1fr 40px;
+  align-items: center;
+  gap: 10px;
+}
+
+.genre-label {
+  text-transform: capitalize;
+  font-size: 0.9em;
+}
+
+.genre-bar-track {
+  background: #222;
+  border-radius: 4px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.genre-bar-fill {
+  background: #1db954;
+  height: 100%;
+}
+
+.genre-percent {
+  text-align: right;
+  font-size: 0.85em;
+  color: #b3b3b3;
+}
+
+@media (max-width: 700px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
