@@ -31,11 +31,8 @@ const translations = {
     topTracks: "Топ треков",
     topArtists: "Топ исполнителей",
     greeting: "Привет",
-    statListeningTime: "Время прослушивания",
     statUniqueArtists: "Разных исполнителей",
-    statExplicit: "Explicit-треков",
-    hoursSuffix: "ч",
-    minutesSuffix: "мин",
+    statExplicit: "С ненормативной лексикой",
   },
   en: {
     appTitle: "Spotify Taste Summary",
@@ -65,11 +62,8 @@ const translations = {
     topTracks: "Top Tracks",
     topArtists: "Top Artists",
     greeting: "Hi",
-    statListeningTime: "Listening Time",
     statUniqueArtists: "Different Artists",
     statExplicit: "Explicit Tracks",
-    hoursSuffix: "h",
-    minutesSuffix: "m",
   },
 };
 

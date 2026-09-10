@@ -109,12 +109,10 @@ function buildSummary(tracksData, artistsData, profile) {
     url: artist.external_urls?.spotify ?? null,
   }));
 
-  const totalDurationMs = tracksData.items.reduce((sum, t) => sum + (t.duration_ms ?? 0), 0);
   const uniqueArtistIds = new Set(tracksData.items.flatMap((t) => t.artists.map((a) => a.id)));
   const explicitCount = tracksData.items.filter((t) => t.explicit).length;
 
   const stats = {
-    totalMinutes: Math.round(totalDurationMs / 60_000),
     uniqueArtistsCount: uniqueArtistIds.size,
     explicitPercent: tracksData.items.length
       ? Math.round((explicitCount / tracksData.items.length) * 100)
