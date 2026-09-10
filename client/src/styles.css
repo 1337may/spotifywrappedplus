@@ -17,18 +17,64 @@ body {
 
 .centered {
   text-align: center;
-  padding-top: 15vh;
+  padding-top: 6vh;
 }
 
 .spotify-button {
   display: inline-block;
   margin-top: 24px;
   padding: 12px 28px;
+  border: none;
   border-radius: 999px;
   background: #1db954;
   color: #000;
   font-weight: 700;
+  font-size: 1em;
   text-decoration: none;
+  cursor: pointer;
+}
+
+.setup-box {
+  max-width: 520px;
+  margin: 32px auto 0;
+  text-align: left;
+  background: #181818;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.setup-box ol {
+  padding-left: 20px;
+  color: #ddd;
+  line-height: 1.6;
+}
+
+.setup-box code {
+  background: #000;
+  padding: 2px 6px;
+  border-radius: 4px;
+  word-break: break-all;
+}
+
+.creds-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.creds-form input {
+  background: #222;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 1em;
+}
+
+.creds-form .spotify-button {
+  margin-top: 4px;
+  width: 100%;
 }
 
 .error {

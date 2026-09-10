@@ -2,57 +2,44 @@
 
 Веб-приложение: логин через Spotify и выжимка по любимым трекам и исполнителям за разные периоды.
 
-## 1. Создайте приложение в Spotify Developer Dashboard
+## Почему у каждого пользователя своё Spotify-приложение
 
-1. Откройте https://developer.spotify.com/dashboard и войдите под своим аккаунтом.
-2. Create app → укажите любое имя/описание.
-3. В "Redirect URIs" добавьте: `http://127.0.0.1:8888/callback`
-4. Сохраните, откройте Settings приложения — скопируйте **Client ID** и **Client Secret**.
+Spotify ограничивает Development Mode пятью пользователями на приложение, а Extended Quota Mode с мая 2025 доступен только организациям, не частным лицам — открыть один сайт для всех через один Client ID невозможно.
 
-## 2. Настройте переменные окружения
+Поэтому сайт мультитенантный: каждый посетитель на странице логина создаёт своё бесплатное Spotify-приложение (2 минуты, инструкция прямо на странице) и вводит его Client ID/Secret. Дальше OAuth идёт от его собственного приложения, и лимит в 5 пользователей ограничивает только его — не общий сайт.
+
+**Компромисс:** введённые Client ID/Secret хранятся в `sessionStorage` браузера (вместе с access/refresh токеном) и передаются на backend только для обмена/обновления токена — это чужой для нашего сайта секрет, но он принадлежит самому пользователю и его собственному Spotify-приложению, так что риск ограничен той же моделью доверия, что и для токена.
+
+## Запуск локально
 
 ```bash
 cp server/.env.example server/.env
-```
-
-Впишите в `server/.env` полученные `SPOTIFY_CLIENT_ID` и `SPOTIFY_CLIENT_SECRET`. Остальные значения можно оставить как есть для локальной разработки.
-
-## 3. Установите зависимости и запустите
-
-```bash
 npm run install:all
 npm run dev
 ```
 
-Откройте http://127.0.0.1:5173.
+Откройте http://127.0.0.1:5173 — на странице логина будет форма для ввода Client ID/Secret с инструкцией, где их взять (Redirect URI подставляется автоматически под текущий домен).
 
 Backend поднимется на порту 8888, frontend — на 5173 (Vite-прокси перенаправляет `/login` и `/refresh` на backend).
 
 ## Как это работает
 
-- `GET /login` редиректит на Spotify OAuth (scope `user-top-read`).
-- После согласия Spotify возвращает пользователя на `/callback`; backend обменивает код на access/refresh токены (единственный шаг, которому нужен Client Secret) и передаёт их фронтенду через фрагмент URL (`/summary#access_token=...`).
-- Фронтенд сохраняет токены в `sessionStorage` браузера и сам ходит в Spotify Web API (`/me/top/tracks`, `/me/top/artists`) с заголовком `Authorization: Bearer ...` — без прокси через backend.
-- Когда access token истекает (обычно через 1 час), фронтенд дёргает `POST /refresh` — единственный оставшийся backend-эндпоинт для данных, потому что обновление токена тоже требует Client Secret.
-- Токены живут только в текущей вкладке браузера (`sessionStorage`) и пропадают при закрытии вкладки — при следующем визите нужно будет войти заново.
-
-**Компромисс:** access/refresh токен хранится в JS-доступном `sessionStorage`, а не в httpOnly cookie — это стандартный подход для SPA, но он означает, что токен теоретически доступен через XSS. Для личного локального инструмента это приемлемо.
+- Посетитель вводит свои Client ID/Secret в форму на `/`, которая POST-ит их на `/login`.
+- `POST /login` кладёт Client ID/Secret в короткоживущую httpOnly cookie (10 минут) и редиректит на Spotify OAuth (scope `user-top-read`).
+- После согласия Spotify возвращает пользователя на `/callback`; backend читает cookie, обменивает код на access/refresh токены и передаёт всё (токены + Client ID/Secret) фронтенду через фрагмент URL (`/summary#access_token=...`).
+- Фронтенд сохраняет всё в `sessionStorage` браузера и сам ходит в Spotify Web API (`/me/top/tracks`, `/me/top/artists`) с заголовком `Authorization: Bearer ...` — без прокси через backend.
+- Когда access token истекает (обычно через 1 час), фронтенд дёргает `POST /refresh` с refresh-токеном и своими же Client ID/Secret — единственный оставшийся backend-эндпоинт для данных, потому что и обмен, и обновление токена требуют Client Secret, а его нельзя светить в браузерном запросе напрямую к Spotify.
+- Токены и креды живут только в текущей вкладке браузера (`sessionStorage`) и пропадают при закрытии вкладки — при следующем визите нужно будет войти заново (Client ID/Secret придётся ввести повторно, если пользователь не сохранил их сам).
 
 ## Деплой на Render.com
 
 В продакшене backend сам раздаёт собранный фронтенд (`client/dist`) — один сервис, один домен, не нужно поднимать два процесса и настраивать CORS.
 
 1. Запушьте репозиторий на GitHub (или другой Git-провайдер, который поддерживает Render).
-2. На [dashboard.render.com](https://dashboard.render.com) → **New** → **Blueprint**, укажите репозиторий — Render подхватит [render.yaml](render.yaml) из корня и сам создаст веб-сервис (build: `npm run build`, start: `npm start`).
-3. При первом деплое Render запросит значения `SPOTIFY_CLIENT_ID` и `SPOTIFY_CLIENT_SECRET` (помечены `sync: false` в render.yaml) — впишите их в Environment на дашборде Render.
-4. После деплоя Render выдаст домен вида `https://spotify-taste-summary.onrender.com` (или с суффиксом, если имя занято). Скопируйте его.
-5. На developer.spotify.com/dashboard в Redirect URIs вашего приложения добавьте:
-   ```
-   https://<ваш-домен>.onrender.com/callback
-   ```
-   Можно оставить рядом и `http://127.0.0.1:8888/callback` для локальной разработки — Spotify разрешает несколько Redirect URIs одновременно.
-6. `REDIRECT_URI` и `CLIENT_URL` можно не задавать вручную в Render — сервер сам берёт домен из встроенной переменной Render `RENDER_EXTERNAL_URL`.
+2. На [dashboard.render.com](https://dashboard.render.com) → **New** → **Blueprint**, укажите репозиторий — Render подхватит [render.yaml](render.yaml) из корня и сам создаст веб-сервис (build: `npm run build`, start: `npm start`). Никаких секретов вводить не нужно — сервер их не хранит.
+3. После деплоя Render выдаст домен вида `https://spotify-taste-summary.onrender.com`.
+4. `REDIRECT_URI` и `CLIENT_URL` можно не задавать вручную — сервер сам берёт домен из встроенной переменной Render `RENDER_EXTERNAL_URL`, и страница логина сама подставит правильный Redirect URI в инструкцию для каждого посетителя.
 
-**Development Mode:** по правилам Spotify с февраля 2026 новое приложение доступно только пользователям, добавленным вручную (до 5) в Dashboard → Settings → User Management, и требует Spotify Premium у каждого такого пользователя. Чтобы открыть доступ всем, нужно подать заявку на Extended Quota Mode через форму в Dashboard.
+**Development Mode (на каждого посетителя):** приложение конкретного пользователя доступно только аккаунтам, добавленным вручную (до 5) в его Dashboard → Settings → User Management — так что чаще всего это будет только он сам (владелец приложения не считается за отдельного пользователя). Каждому нужен Spotify Premium.
 
 **Почему нет раздела с жанрами:** с февраля 2026 Spotify перестал отдавать поле `genres` (а также `followers` и `popularity`) у исполнителей через `/me/top/artists` для новых Development Mode приложений — это часть их новых ограничений на доступ к Web API, а не баг в коде. Раздел «Топ жанров» был убран по этой причине.

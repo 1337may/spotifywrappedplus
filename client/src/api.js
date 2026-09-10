@@ -27,6 +27,8 @@ export function consumeTokensFromUrlHash() {
     accessToken,
     refreshToken: params.get("refresh_token"),
     expiresAt: Date.now() + Number(params.get("expires_in")) * 1000,
+    clientId: params.get("client_id"),
+    clientSecret: params.get("client_secret"),
   });
   window.history.replaceState(null, "", window.location.pathname);
 }
@@ -41,7 +43,11 @@ async function getValidAccessToken() {
   const res = await fetch("/refresh", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh_token: tokens.refreshToken }),
+    body: JSON.stringify({
+      refresh_token: tokens.refreshToken,
+      client_id: tokens.clientId,
+      client_secret: tokens.clientSecret,
+    }),
   });
   if (!res.ok) {
     logout();
@@ -50,6 +56,7 @@ async function getValidAccessToken() {
 
   const refreshed = await res.json();
   storeTokens({
+    ...tokens,
     accessToken: refreshed.access_token,
     refreshToken: refreshed.refresh_token ?? tokens.refreshToken,
     expiresAt: Date.now() + refreshed.expires_in * 1000,
