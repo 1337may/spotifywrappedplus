@@ -3,12 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { consumeTokensFromUrlHash, getSummary, isAuthenticated, logout } from "../api.js";
 import TrackList from "../components/TrackList.jsx";
 import ArtistList from "../components/ArtistList.jsx";
+import LanguageSwitcher from "../components/LanguageSwitcher.jsx";
+import { useLanguage } from "../i18n.jsx";
 
-const RANGES = [
-  { value: "short_term", label: "4 недели" },
-  { value: "medium_term", label: "6 месяцев" },
-  { value: "long_term", label: "Всё время" },
-];
+const RANGES = ["short_term", "medium_term", "long_term"];
 
 export default function Summary() {
   const [range, setRange] = useState("medium_term");
@@ -16,6 +14,7 @@ export default function Summary() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   useEffect(() => {
     consumeTokensFromUrlHash();
@@ -33,7 +32,7 @@ export default function Summary() {
           logout();
           navigate("/", { replace: true });
         } else {
-          setError("Не удалось загрузить данные из Spotify.");
+          setError(t("summaryError"));
         }
       })
       .finally(() => setLoading(false));
@@ -47,35 +46,38 @@ export default function Summary() {
   return (
     <div className="page">
       <header className="summary-header">
-        <h1>Ваша выжимка</h1>
-        <button className="link-button" onClick={handleLogout}>
-          Выйти
-        </button>
+        <h1>{t("summaryTitle")}</h1>
+        <div className="header-actions">
+          <LanguageSwitcher />
+          <button className="link-button" onClick={handleLogout}>
+            {t("logout")}
+          </button>
+        </div>
       </header>
 
       <div className="range-tabs">
         {RANGES.map((r) => (
           <button
-            key={r.value}
-            className={r.value === range ? "tab active" : "tab"}
-            onClick={() => setRange(r.value)}
+            key={r}
+            className={r === range ? "tab active" : "tab"}
+            onClick={() => setRange(r)}
           >
-            {r.label}
+            {t(`range_${r}`)}
           </button>
         ))}
       </div>
 
-      {loading && <p>Загрузка...</p>}
+      {loading && <p>{t("loading")}</p>}
       {error && <p className="error">{error}</p>}
 
       {data && !loading && (
         <div className="summary-grid">
           <section>
-            <h2>Топ треков</h2>
+            <h2>{t("topTracks")}</h2>
             <TrackList tracks={data.topTracks.slice(0, 20)} />
           </section>
           <section>
-            <h2>Топ исполнителей</h2>
+            <h2>{t("topArtists")}</h2>
             <ArtistList artists={data.topArtists.slice(0, 20)} />
           </section>
         </div>

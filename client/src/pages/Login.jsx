@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { isAuthenticated } from "../api.js";
+import { useLanguage } from "../i18n.jsx";
+import LanguageSwitcher from "../components/LanguageSwitcher.jsx";
 
-const ERROR_MESSAGES = {
-  state_mismatch: "Не удалось проверить запрос авторизации, попробуйте ещё раз.",
-  access_denied: "Доступ к Spotify не был предоставлен.",
-  token_exchange_failed: "Не удалось завершить авторизацию в Spotify.",
-  missing_credentials: "Введите Client ID и Client Secret.",
-};
+const KNOWN_ERRORS = ["state_mismatch", "access_denied", "token_exchange_failed", "missing_credentials"];
 
 export default function Login() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const error = searchParams.get("error");
   const [clientId, setClientId] = useState("");
   const [clientSecret, setClientSecret] = useState("");
@@ -25,37 +23,37 @@ export default function Login() {
 
   return (
     <div className="page centered">
-      <h1>Spotify Taste Summary</h1>
-      <p>Узнайте свои любимые треки и исполнителей.</p>
-      {error && <p className="error">{ERROR_MESSAGES[error] ?? "Что-то пошло не так."}</p>}
+      <LanguageSwitcher />
+      <h1>{t("appTitle")}</h1>
+      <p>{t("loginSubtitle")}</p>
+      {error && (
+        <p className="error">{t(KNOWN_ERRORS.includes(error) ? `error_${error}` : "error_generic")}</p>
+      )}
 
       <div className="setup-box">
-        <p>
-          Из-за ограничений Spotify (Development Mode, до 5 пользователей на приложение) у каждого
-          посетителя должно быть своё Spotify-приложение. Это бесплатно и занимает пару минут:
-        </p>
+        <p>{t("setupIntro")}</p>
         <ol>
           <li>
-            Откройте{" "}
+            {t("setupStep1")}{" "}
             <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noreferrer">
               developer.spotify.com/dashboard
             </a>{" "}
-            и нажмите Create app
+            {t("setupStep1End")}
           </li>
-          <li>Впишите любое название (не начинающееся на «Spot») и описание</li>
+          <li>{t("setupStep2")}</li>
           <li>
-            В поле Redirect URIs добавьте ровно:
+            {t("setupStep3")}
             <br />
             <code>{redirectUri}</code>
           </li>
-          <li>Сохраните и откройте Settings приложения — там будут Client ID и Client Secret</li>
+          <li>{t("setupStep4")}</li>
         </ol>
 
         <form method="POST" action="/login" className="creds-form">
           <input
             type="text"
             name="client_id"
-            placeholder="Client ID"
+            placeholder={t("clientIdPlaceholder")}
             value={clientId}
             onChange={(e) => setClientId(e.target.value)}
             required
@@ -63,13 +61,13 @@ export default function Login() {
           <input
             type="password"
             name="client_secret"
-            placeholder="Client Secret"
+            placeholder={t("clientSecretPlaceholder")}
             value={clientSecret}
             onChange={(e) => setClientSecret(e.target.value)}
             required
           />
           <button type="submit" className="spotify-button">
-            Войти через Spotify
+            {t("loginButton")}
           </button>
         </form>
       </div>

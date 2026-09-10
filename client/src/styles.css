@@ -16,6 +16,7 @@ body {
 }
 
 .centered {
+  position: relative;
   text-align: center;
   padding-top: 6vh;
 }
@@ -85,6 +86,42 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lang-switcher {
+  display: inline-flex;
+  gap: 4px;
+  background: #222;
+  border-radius: 999px;
+  padding: 4px;
+}
+
+.centered .lang-switcher {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+}
+
+.lang-option {
+  background: none;
+  border: none;
+  color: #aaa;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lang-option.active {
+  background: #1db954;
+  color: #000;
 }
 
 .link-button {
