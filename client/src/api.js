@@ -84,15 +84,16 @@ export async function getSummary(range) {
     throw err;
   }
 
-  const [tracksData, artistsData] = await Promise.all([
+  const [tracksData, artistsData, profile] = await Promise.all([
     spotifyGet(accessToken, `/me/top/tracks?time_range=${range}&limit=50`),
     spotifyGet(accessToken, `/me/top/artists?time_range=${range}&limit=50`),
+    spotifyGet(accessToken, "/me"),
   ]);
 
-  return buildSummary(tracksData, artistsData);
+  return buildSummary(tracksData, artistsData, profile);
 }
 
-function buildSummary(tracksData, artistsData) {
+function buildSummary(tracksData, artistsData, profile) {
   const topTracks = tracksData.items.map((track) => ({
     id: track.id,
     name: track.name,
@@ -108,5 +109,25 @@ function buildSummary(tracksData, artistsData) {
     url: artist.external_urls?.spotify ?? null,
   }));
 
-  return { topTracks, topArtists };
+  const totalDurationMs = tracksData.items.reduce((sum, t) => sum + (t.duration_ms ?? 0), 0);
+  const uniqueArtistIds = new Set(tracksData.items.flatMap((t) => t.artists.map((a) => a.id)));
+  const explicitCount = tracksData.items.filter((t) => t.explicit).length;
+
+  const stats = {
+    totalMinutes: Math.round(totalDurationMs / 60_000),
+    uniqueArtistsCount: uniqueArtistIds.size,
+    explicitPercent: tracksData.items.length
+      ? Math.round((explicitCount / tracksData.items.length) * 100)
+      : 0,
+  };
+
+  return {
+    topTracks,
+    topArtists,
+    stats,
+    profile: {
+      displayName: profile.display_name ?? null,
+      image: profile.images?.[0]?.url ?? null,
+    },
+  };
 }

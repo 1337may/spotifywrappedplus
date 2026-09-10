@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { consumeTokensFromUrlHash, getSummary, isAuthenticated, logout } from "../api.js";
 import TrackList from "../components/TrackList.jsx";
 import ArtistList from "../components/ArtistList.jsx";
+import StatsGrid from "../components/StatsGrid.jsx";
 import LanguageSwitcher from "../components/LanguageSwitcher.jsx";
 import { useLanguage } from "../i18n.jsx";
 
@@ -46,7 +47,12 @@ export default function Summary() {
   return (
     <div className="page">
       <header className="summary-header">
-        <h1>{t("summaryTitle")}</h1>
+        <div className="profile-row">
+          {data?.profile?.image && <img src={data.profile.image} alt="" className="thumb round" />}
+          <h1>
+            {data?.profile?.displayName ? `${t("greeting")}, ${data.profile.displayName}!` : t("summaryTitle")}
+          </h1>
+        </div>
         <div className="header-actions">
           <LanguageSwitcher />
           <button className="link-button" onClick={handleLogout}>
@@ -71,16 +77,19 @@ export default function Summary() {
       {error && <p className="error">{error}</p>}
 
       {data && !loading && (
-        <div className="summary-grid">
-          <section>
-            <h2>{t("topTracks")}</h2>
-            <TrackList tracks={data.topTracks.slice(0, 20)} />
-          </section>
-          <section>
-            <h2>{t("topArtists")}</h2>
-            <ArtistList artists={data.topArtists.slice(0, 20)} />
-          </section>
-        </div>
+        <>
+          <StatsGrid stats={data.stats} />
+          <div className="summary-grid">
+            <section>
+              <h2>{t("topTracks")}</h2>
+              <TrackList tracks={data.topTracks.slice(0, 20)} />
+            </section>
+            <section>
+              <h2>{t("topArtists")}</h2>
+              <ArtistList artists={data.topArtists.slice(0, 20)} />
+            </section>
+          </div>
+        </>
       )}
     </div>
   );

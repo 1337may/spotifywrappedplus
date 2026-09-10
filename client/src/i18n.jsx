@@ -30,6 +30,12 @@ const translations = {
     summaryError: "Не удалось загрузить данные из Spotify.",
     topTracks: "Топ треков",
     topArtists: "Топ исполнителей",
+    greeting: "Привет",
+    statListeningTime: "Время прослушивания",
+    statUniqueArtists: "Разных исполнителей",
+    statExplicit: "Explicit-треков",
+    hoursSuffix: "ч",
+    minutesSuffix: "мин",
   },
   en: {
     appTitle: "Spotify Taste Summary",
@@ -58,6 +64,12 @@ const translations = {
     summaryError: "Could not load data from Spotify.",
     topTracks: "Top Tracks",
     topArtists: "Top Artists",
+    greeting: "Hi",
+    statListeningTime: "Listening Time",
+    statUniqueArtists: "Different Artists",
+    statExplicit: "Explicit Tracks",
+    hoursSuffix: "h",
+    minutesSuffix: "m",
   },
 };
 
